@@ -25,15 +25,18 @@ export const Balance = {
    */
   pushGain: 12.0,
 
-  /** Max steer rate (radians/sec) at full lean. */
-  turnRate: 2.2,
+  /** How fast the board's angle eases toward the steer target (lower = weightier). */
+  turnRate: 2.4,
   /** Steering loses authority at very low speed. */
-  turnSpeedFloor: 3.0,
-  /** How quickly steer input ramps toward the held value. */
-  steerResponse: 9.0,
-  /** Max angle (radians) either side of "down the line" the board can point —
-   * full steer climbs to the lip or drops to the trough but never spins out. */
-  headingClamp: 1.05,
+  turnSpeedFloor: 50.0,
+  /** How quickly steer input ramps toward the held value (lower = less twitchy). */
+  steerResponse: 5.0,
+  /** Max angle (radians) either side of "down the line" the board can point.
+   * Deliberately gentle — surfing is about trim, not 60° slides. */
+  headingClamp: 0.5,
+  /** When the stick is near neutral the board auto-trims back toward the pocket
+   * (faceSweet), so easing off settles you on a clean line instead of drifting. */
+  autoTrim: 1.4,
 
   /** Speed clamps (m/s). */
   vMin: 2.0,
@@ -67,6 +70,10 @@ export const Balance = {
   /** ideal fraction down the face (0 crest .. 1 trough) — high in the pocket. */
   faceSweet: 0.3,
   faceTolerance: 0.34,
+  /** Hard limits on where the board can sit on the face (a safety net behind the
+   * soft "the wave holds you" steering): just over the lip to near the trough. */
+  faceClampMin: -1.0,
+  faceClampMaxFrac: 0.96,
   /** ideal distance (m) ahead of the curl to sit. */
   curlSweet: 2.5,
   curlTolerance: 5.0,
@@ -101,8 +108,8 @@ export const Balance = {
   airSpinPoints: 500,
   /** Air must clear at least this long to score (s). */
   airMinTime: 0.32,
-  /** Land within this many radians of forward to make the landing. */
-  airLandTolerance: 1.2,
+  /** Land within this many radians of forward to make the landing (forgiving). */
+  airLandTolerance: 2.2,
   /** Combo: each linked trick adds this to the chain multiplier. */
   comboStep: 0.5,
   comboMax: 6.0,

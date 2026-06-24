@@ -144,8 +144,9 @@ export class Surfer {
     const faceSteep = Math.hypot(s.gradX, s.gradZ);
     this.foam = clamp01(s.broken);
 
-    // --- steering ------------------------------------------------------------
+    // --- steering: gentle, weighty, and the wave holds you on the face --------
     this.steer = damp(this.steer, input.steerTarget, B.steerResponse, dt);
+    this.bank = damp(this.bank, -this.steer, 6, dt);
     const turnAuth = clamp01(0.4 + this.speed / B.turnSpeedFloor);
 
     if (this.airborne) {
@@ -153,13 +154,21 @@ export class Surfer {
       this.heading += this.steer * B.turnRate * 1.6 * dt;
       this.airSpin += Math.abs(this.steer) * B.turnRate * 1.6 * dt;
     } else {
-      // steering sets the angle on the face: 0 = trim down the line, + = drop
-      // toward the trough (gain speed), - = climb to the lip. Releasing the stick
-      // returns the board to trim, so it never spins out and is easy to control.
-      const target = this.steer * B.headingClamp;
+      // steering tilts the board on the face: + drops toward the trough (gains
+      // speed), - climbs toward the lip. Ease off and it auto-trims back toward
+      // the pocket — forgiving and surf-like rather than twitchy.
+      let cmd = this.steer;
+      if (Math.abs(input.steerTarget) < 0.15) {
+        cmd -= (faceFrac - B.faceSweet) * B.autoTrim;
+      }
+      // the wave holds you on its face: climb authority fades near the lip, drop
+      // authority fades near the trough, so you can't shoot off either edge
+      if (cmd < 0) cmd *= smoothstep(0.06, 0.3, faceFrac);
+      if (cmd > 0) cmd *= smoothstep(0.9, 0.55, faceFrac);
+      cmd = clamp(cmd, -1, 1);
+      const target = cmd * B.headingClamp;
       this.heading = damp(this.heading, target, B.turnRate * stats.turnMul * turnAuth, dt);
     }
-    this.bank = damp(this.bank, -this.steer, 6, dt);
 
     const hx = Math.cos(this.heading);
     const hz = Math.sin(this.heading);
@@ -252,9 +261,12 @@ export class Surfer {
       }
     }
 
-    // --- advance the base position ------------------------------------------
+    // --- advance the base position (the wave keeps you within its face) -------
     this.x += hx * this.speed * dt;
     this.z += hz * this.speed * dt;
+    if (!this.airborne) {
+      this.z = clamp(this.z, B.faceClampMin, field.params.faceWidth * B.faceClampMaxFrac);
+    }
 
     // --- contextual carve tricks (snap / cutback) ---------------------------
     this.detectCarve(ev, faceFrac, faceSteep);
@@ -291,7 +303,7 @@ export class Surfer {
   private detectCarve(ev: SurferEvents, faceFrac: number, faceSteep: number): void {
     if (this.airborne) return;
     const B = Balance;
-    const dir = this.steer > 0.6 ? 1 : this.steer < -0.6 ? -1 : 0;
+    const dir = this.steer > 0.45 ? 1 : this.steer < -0.45 ? -1 : 0;
     if (dir === 0) return;
     if (this.carveArm !== 0 && dir !== this.carveArm && this.trickCd <= 0) {
       if (this.speed >= B.trickMinSpeed && faceSteep >= B.pumpMinSteepness) {
@@ -314,7 +326,8 @@ export class Surfer {
     const landOff = Math.abs(((this.heading % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2) - Math.PI);
     this.heading = clamp(this.heading, -B.headingClamp, B.headingClamp);
     if (this.airTime < B.airMinTime) return; // a hop, not an air
-    if (landOff > B.airLandTolerance && faceSteep < 0.2) {
+    // airs are a forgiving bonus — only a really wild, flat landing blows it
+    if (landOff > B.airLandTolerance && faceSteep < 0.12) {
       this.wipeoutNow(ev, "Blew the landing");
       return;
     }
