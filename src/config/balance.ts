@@ -122,12 +122,16 @@ export const Balance = {
   stallSteepness: 0.12,
   stallTime: 1.8,
 
-  /** Camera. Sits low and close so the bigger wave face looms over the rider. */
-  camDistance: 9.5,
-  camHeight: 2.6,
-  camLookAhead: 8.0,
+  /** Chase camera — trails down the line and sits out on the open face, looking
+   * back toward the lip, so the wave wall frames the shot (never the back). */
+  camDistance: 8.5, // metres behind, down the line
+  camHeight: 3.2,
+  camSide: 3.0, // metres out toward the open shoulder (keeps the cam on the face)
+  camLookAhead: 7.0,
+  camLookUp: 1.2,
+  camLookSide: 3.5, // look back toward the lip / crest
   camFollow: 3.6,
-  camFovBase: 72,
+  camFovBase: 74,
   camFovSpeed: 14, // extra FOV at vMax for a sense of speed
 
   /** Score -> Tide Coins conversion at end of run (legacy; unused once coins go). */

@@ -467,17 +467,25 @@ export class Game {
   private updateCameraFollow(dt: number): void {
     const s = this.surfer.sample;
     const hx = Math.cos(this.surfer.heading);
-    const hz = Math.sin(this.surfer.heading);
     const px = s.posX;
     const py = this.surfer.renderY;
     const pz = s.posZ;
 
+    // Trail down the line (behind in -X) and sit out on the open face (+Z), so
+    // the camera stays on the wave face and never swings round to the back. The
+    // lateral offset is fixed to the shoulder rather than tied to heading (which
+    // would push the camera behind the crest when the board angles down the face).
     this.camTarget.set(
       px - hx * Balance.camDistance,
       py + Balance.camHeight,
-      pz - hz * Balance.camDistance,
+      pz + Balance.camSide,
     );
-    this.lookTarget.set(px + hx * Balance.camLookAhead, py + 1.0, pz + hz * Balance.camLookAhead);
+    // look down the line and back toward the lip so the wall frames the shot
+    this.lookTarget.set(
+      px + hx * Balance.camLookAhead,
+      py + Balance.camLookUp,
+      pz - Balance.camLookSide,
+    );
 
     if (this.snapCam) {
       this.camera.position.copy(this.camTarget);
