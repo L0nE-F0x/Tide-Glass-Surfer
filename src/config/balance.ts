@@ -23,7 +23,7 @@ export const Balance = {
    * instead of just sliding down into the trough. Tuned so a trimming board in
    * the pocket cruises near the peel speed (~15 m/s) rather than outrunning it.
    */
-  pushGain: 8.0,
+  pushGain: 12.0,
 
   /** Max steer rate (radians/sec) at full lean. */
   turnRate: 2.2,
@@ -37,9 +37,9 @@ export const Balance = {
 
   /** Speed clamps (m/s). */
   vMin: 2.0,
-  vMax: 30.0,
+  vMax: 34.0,
   /** Launch speed when dropping in. */
-  vStart: 12.0,
+  vStart: 15.0,
 
   /** Pump impulse model: impulse = pumpGain * faceSteepness * turnSharpness * timing. */
   pumpGain: 13.0,
@@ -109,8 +109,8 @@ export const Balance = {
 
   // --- wipeout thresholds ---------------------------------------------------
   /** Caught: board falls this far behind the curl (curlDist below) for caughtTime. */
-  caughtMargin: -1.0,
-  caughtTime: 1.1,
+  caughtMargin: -2.0,
+  caughtTime: 1.6,
   /** Lost the wave: off the bottom (faceFrac above) or over the back (z below). */
   lostFaceFrac: 0.98,
   lostBackZ: -1.5,

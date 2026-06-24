@@ -46,7 +46,7 @@ export const SPOTS: Spot[] = [
       lipCenter: 0.16,
       lipWidth: 0.18,
       chopAmp: 0.16,
-      peelSpeed: 16.0,
+      peelSpeed: 14.0,
     },
   },
   {
@@ -72,7 +72,7 @@ export const SPOTS: Spot[] = [
       lipCenter: 0.16,
       lipWidth: 0.16,
       chopAmp: 0.18,
-      peelSpeed: 20.0,
+      peelSpeed: 16.0,
     },
   },
   {
@@ -98,7 +98,7 @@ export const SPOTS: Spot[] = [
       lipCenter: 0.15,
       lipWidth: 0.15,
       chopAmp: 0.2,
-      peelSpeed: 23.0,
+      peelSpeed: 18.0,
     },
   },
   {
@@ -124,7 +124,7 @@ export const SPOTS: Spot[] = [
       lipCenter: 0.18,
       lipWidth: 0.17,
       chopAmp: 0.22,
-      peelSpeed: 18.0,
+      peelSpeed: 16.0,
     },
   },
 ];

@@ -237,9 +237,10 @@ export class Game {
     if (this.state !== "handoff") return;
     this.buildField();
     this.field.energy = 1;
-    // drop in on the upper face just ahead of the curl, racing the peel down +X
-    this.field.curlX = -3;
-    this.surfer.reset(0, 2.0, 0.18);
+    // drop in well ahead of the curl with a steeper line so the board can build
+    // speed before the peel catches up
+    this.field.curlX = -6;
+    this.surfer.reset(0, 2.4, 0.28);
     this.surfer.flowCeiling = this.spot.styleCeiling;
     this.input.reset();
     this.snapCam = true;
@@ -385,9 +386,9 @@ export class Game {
 
   private stepPlaying(dt: number): void {
     this.field.energy = spotEnergyAt(this.spot, this.surfer.runTime);
-    // the curl peels down the line; it speeds up a little (not 1:1 with energy,
-    // so the peel never outruns the board's top speed) as the swell builds
-    this.field.curlX += this.field.peelSpeed * (0.8 + 0.2 * this.field.energy) * dt;
+    // the curl peels down the line; it speeds up only a little as the swell
+    // builds, so it always stays catchable
+    this.field.curlX += this.field.peelSpeed * (0.85 + 0.15 * this.field.energy) * dt;
     const ev = this.surfer.update(dt, this.input, this.field, this.elapsed, this.stats);
 
     this.emitSprayAndFx(ev);
